@@ -30,7 +30,7 @@ public class EmployeeValidator {
         return errors;
     }
 
-    // 社員番号
+    // 社員番号 codeDuplicateCheckFlagはeditに出てくる
     private static String validateCode(String code, Boolean codeDuplicateCheckFlag) {
         // 必須入力チェック
         if(code == null || code.equals("")) {
@@ -38,7 +38,7 @@ public class EmployeeValidator {
         }
 
         // すでに登録されている社員番号との重複チェック
-        // すごく大きい数字でなければintへのキャストでもOK
+        // 削除済みを含む社員数が多い場合を考えてlong型へのキャストだが、多くなければintでもOKのはず。
         if(codeDuplicateCheckFlag) {
             EntityManager em = DBUtil.createEntityManager();
             long employees_count = (long)em.createNamedQuery("checkRegisteredCode", Long.class).setParameter("code", code).getSingleResult();
