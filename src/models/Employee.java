@@ -28,7 +28,7 @@ import javax.persistence.Table;
         name = "checkRegisteredCode",
         query = "SELECT COUNT(e) FROM Employee AS e WHERE e.code = :code"
     ),
-    //削除済みで、Javaのcodeとカラムcodeが同じで、Javaのpassとカラムpasswordが同じレコードがあるか
+    //削除済みでなく、Javaのcodeとカラムcodeが同じで、Javaのpassとカラムpasswordが同じレコードがあるか
     @NamedQuery(
         name = "checkLoginCodeAndPassword",
         query = "SELECT e FROM Employee AS e WHERE e.delete_flag = 0 AND e.code = :code AND e.password = :pass"
