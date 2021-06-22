@@ -63,13 +63,15 @@ public class EmployeesCreateServlet extends HttpServlet {
             e.setUpdated_at(currentTime);
             e.setDelete_flag(0);
 
-            // バリデーションを実行してエラーがあったら新規登録のフォームに戻る
+            // バリデーション(カラでないか、社員番号の重複がないか)を実行してエラーがあったら新規登録のフォームに戻る
             // 社員番号の重複チェック、名前が入力されてるかチェック、パスワードが入力されているかチェック
+            // codeDuplicateCheckFlag と passwordCheckFlagはUpdateの時しか使わないので
+            // trueにしてリスト宣言
             List<String> errors = EmployeeValidator.validate(e, true, true);
             if (errors.size() > 0) {
                 em.close();
 
-                // フォームに初期値を設定（editの場合だけ、newの場合はカラのインスタンス）
+                // フォームに初期値を設定（editの場合だけ、new（create）の場合はカラのインスタンス）
                 //さらにエラーメッセージを送る
                 request.setAttribute("_token", request.getSession().getId());
                 request.setAttribute("employee", e);
