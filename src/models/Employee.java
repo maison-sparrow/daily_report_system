@@ -22,7 +22,7 @@ import javax.persistence.Table;
         query = "SELECT COUNT(e) FROM Employee AS e"
     ),
 
-    //仮称eテーブルの中からjavaでのcodeがテーブルのcodeと同じレコードを数える
+    //仮称eテーブルの中からjavaでのcodeがテーブルのcodeと同じレコードを数える。
     //社員番号の重複があるかどうか、バリデーションで1以上ならエラーを出す。
     @NamedQuery(
         name = "checkRegisteredCode",
