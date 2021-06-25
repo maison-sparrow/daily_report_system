@@ -30,9 +30,9 @@ import javax.persistence.Table;
     ),
     //削除済みでなく、Javaのcodeとカラムcodeが同じで、Javaのpassとカラムpasswordが同じレコードがあるか
     @NamedQuery(
-        name = "checkLoginCodeAndPassword",
-        query = "SELECT e FROM Employee AS e WHERE e.delete_flag = 0 AND e.code = :code AND e.password = :pass"
-    )
+            name = "checkLoginCodeAndPassword",
+            query = "SELECT e FROM Employee AS e WHERE e.delete_flag = 0 AND e.code = :code AND e.password = :pass"
+        )
 })
 @Entity
 public class Employee {
