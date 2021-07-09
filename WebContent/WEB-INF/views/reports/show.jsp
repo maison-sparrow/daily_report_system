@@ -23,15 +23,15 @@
                             </tr>
                             <tr>
                                 <th>登録日時</th>
-                                <td><fmt:formatDate value="${report.created_at}" pattern="yyyy-MM-dd" /></td>
+                                <td><fmt:formatDate value="${report.created_at}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
                             </tr>
                             <tr>
                                 <th>更新日時</th>
-                                <td><fmt:formatDate value="${report.updated_at}" pattern="yyyy-MM-dd" /></td>
+                                <td><fmt:formatDate value="${report.updated_at}" pattern="yyyy-MM-dd HH:mm:ss" /></td>
                             </tr>
                         </tbody>
                     </table>
-
+<!-- ログインしているEmployeeのidと、日報のEmployeeのidが同じ場合にeditへのリンク  -->
                     <c:if test="${sessionScope.login_employee.id == report.employee.id}">
                         <p><a href="<c:url value='/reports/edit?id=${report.id}' />">この日報を編集する</a></p>
                     </c:if>
