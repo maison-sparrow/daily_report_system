@@ -20,11 +20,22 @@ import javax.persistence.Table;
     @NamedQuery(
             name = "getAllReports",
             query = "SELECT r FROM Report AS r ORDER BY r.id DESC"
-            ),
+    ),
     @NamedQuery(
             name = "getReportsCount",
             query = "SELECT COUNT(r) FROM Report AS r"
     ),
+    //ログインしているEmployeeが作成した日報を、日報idの降順で全件取得
+    @NamedQuery(
+            name = "getMyAllReports",
+            query = "SELECT r FROM Report AS r WHERE r.employee = :employee ORDER BY r.id DESC"
+    ),
+    //ログインしているEmployeeが作成した日報を集計する
+    @NamedQuery(
+            name = "getMyReportsCount",
+            query = "SELECT COUNT(r) FROM Report AS r WHERE r.employee = :employee"
+    )
+
 })
 @Entity
 public class Report {
