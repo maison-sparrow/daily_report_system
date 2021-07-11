@@ -58,7 +58,7 @@ public class Report {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "created_time", nullable = false)
+    @Column(name = "created_at", nullable = false)
     private Timestamp created_at;
 
     @Column(name = "update_at", nullable = false)
