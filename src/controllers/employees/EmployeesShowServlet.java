@@ -43,4 +43,26 @@ public class EmployeesShowServlet extends HttpServlet {
         rd.forward(request, response);
     }
 
+    /**
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    //ロック解除処理
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        EntityManager em = DBUtil.createEntityManager();
+        Employee e = em.find(Employee.class, Integer.parseInt(request.getParameter("id")));
+
+        e.setFail_login_count(0); //カウントを0にして
+        e.setLocked_at(null); //ロック時間をカラに
+        em.getTransaction().begin();
+        em.getTransaction().commit();
+        em.close();
+        request.setAttribute("employee", e);
+
+        RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/employees/show.jsp");
+        rd.forward(request, response);
+
+}
+
+
 }

@@ -38,16 +38,17 @@
                                 <fmt:formatDate value="${employee.updated_at}" pattern="yyyy-MM-dd HH:mm:ss" />
                             </td>
                         </tr>
-                        <tr>
-                            <th>パスワードエラー回数</th>
-                            <td><c:out value="${employee.fail_login_count}" /></td>
-                        </tr>
+                        <c:if test="${employee.locked_at != null}">
                         <tr>
                             <th>ロック日時</th>
                             <td>
-                                <fmt:formatDate value="${employee.locked_at}" pattern="yyyy-MM-dd HH:mm:ss" />
+                                <fmt:formatDate value="${employee.locked_at}" pattern="yyyy-MM-dd HH:mm:ss" />&emsp;
+                                <form method="POST" action="<c:url value='/employees/show?id=${employee.id}' />">
+                                <input type="submit" name="unlock" value="ロック解除" />
+                                </form>
                             </td>
                         </tr>
+                        </c:if>
                     </tbody>
                 </table>
 
