@@ -56,6 +56,7 @@ public class EmployeesCreateServlet extends HttpServlet {
                             )
                     );
             e.setAdmin_flag(Integer.parseInt(request.getParameter("admin_flag")));
+            e.setFail_login_count(0);
 
             /*System.currentTimeMillis()現在の時間をミリ秒で返す、それをEmployeeのフィールドに代入*/
             Timestamp currentTime = new Timestamp(System.currentTimeMillis());

@@ -1,6 +1,9 @@
 package controllers.login;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -33,10 +36,10 @@ public class LoginServlet extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     //ログイン画面を表示
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         request.setAttribute("_token", request.getSession().getId()); //   トークンをリクエストスコープへ格納
-        request.setAttribute("hasError", false);
-        if(request.getSession().getAttribute("flush") != null) { // セッションスコープのflushがカラでない場合
+        if (request.getSession().getAttribute("flush") != null) { // セッションスコープのflushがカラでない場合
             request.setAttribute("flush", request.getSession().getAttribute("flush")); // リクエストスコープに移して
             request.getSession().removeAttribute("flush"); // セッションスコープはカラにする
         }
@@ -49,8 +52,10 @@ public class LoginServlet extends HttpServlet {
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
      */
     //ログイン処理を実行
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         //認証結果を格納する変数
+        EntityManager em = DBUtil.createEntityManager();
         Boolean check_result = false; //falseとしておく
 
         String code = request.getParameter("code"); //ログイン画面の入力値を変数宣言
@@ -58,13 +63,12 @@ public class LoginServlet extends HttpServlet {
 
         Employee e = null; //カラのインスタンス
 
-        if(code != null && !code.equals("") && plain_pass != null && !plain_pass.equals("")) { //両方とも入力されている場合
-            EntityManager em = DBUtil.createEntityManager();
+        if (code != null && !code.equals("") && plain_pass != null && !plain_pass.equals("")) { //①両方とも入力されている場合
+
 
             String password = EncryptUtil.getPasswordEncrypt(
                     plain_pass,
-                    (String)this.getServletContext().getAttribute("pepper")
-                    );
+                    (String) this.getServletContext().getAttribute("pepper"));
 
             //社員番号とパスワードが正しいかチェックする
             try { ////削除済みでなく、Javaのcodeとカラムcodeが同じで、Javaのpassとカラムpasswordが同じレコードがあればeに入れる
@@ -72,30 +76,91 @@ public class LoginServlet extends HttpServlet {
                         .setParameter("code", code)
                         .setParameter("pass", password)
                         .getSingleResult();
-              } catch(NoResultException ex) {}
-
-            em.close();
-
-            if(e != null) { //カラでない場合
-                check_result = true;
+            } catch (NoResultException ex) {
             }
-        }
 
-        if(!check_result) {
-            // 認証できなかったらログイン画面に戻る
+            if (e != null) { //レコードがあった場合
+                check_result = true;
+
+            } else { //レコードがなかった場合
+                try {
+                    //削除済みでなく、Javaのcodeとカラムcodeが同じレコードがあればeに入れる
+                    e = em.createNamedQuery("checkLoginCode", Employee.class)
+                            .setParameter("code", code)
+                            .getSingleResult();
+
+                } catch (NoResultException ex) {
+                }
+
+                if (e != null) { //②コードのみ一致のレコードがあった場合
+
+                    if (e.getFail_login_count() == 2) {
+                        e.setFail_login_count(3); //カウントを3にして
+                        e.setLocked_at(new Timestamp(System.currentTimeMillis())); //ロック時間を保存
+                        em.getTransaction().begin();
+                        em.getTransaction().commit();
+                        request.setAttribute("locked", "パスワードを3回間違えた為、アカウントがロックされました。");
+
+
+                    } else if (e.getFail_login_count() <= 1) {
+                        int count = e.getFail_login_count();
+                        e.setFail_login_count(count + 1); //カウントに1を足す
+                        em.getTransaction().begin();
+                        em.getTransaction().commit();
+                    }
+                e = null;
+                }
+                //②おわり
+
+            }
+
+
+        } //①おわり
+
+        if (!check_result) { //認証できなかったら
+
+            //ログイン画面に戻る
             request.setAttribute("_token", request.getSession().getId());
-            request.setAttribute("hasError", true);
+            request.setAttribute("hasError", "社員番号かパスワードが間違っています。");
             request.setAttribute("code", code);
 
             RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/login/login.jsp");
             rd.forward(request, response);
-        } else {
-            // 認証できたらログイン状態にしてトップページへリダイレクト
-            request.getSession().setAttribute("login_employee", e);
-
-            request.getSession().setAttribute("flush", "ログインしました。");
-            response.sendRedirect(request.getContextPath() + "/");
         }
+
+        //認証できたらアカウントがロックされていないかチェック
+        //ロックされていたらログイン画面に戻りフラッシュメッセージ
+        //ロックされていなければログイン状態にしてトップページへリダイレクト
+        if (e.getFail_login_count() >= 3) { //3より大きい場合
+
+            Date date_now = new Date(); //現在時刻
+            Calendar calendar_now = Calendar.getInstance();
+            calendar_now.setTime(date_now);
+
+            Calendar calendar_locked_at = Calendar.getInstance(); //ロックされた時刻
+            calendar_locked_at.setTime(e.getLocked_at());
+            calendar_locked_at.add(Calendar.DAY_OF_MONTH, 1); //24時間後
+            if (calendar_locked_at != null && calendar_now.compareTo(calendar_locked_at) >= 0) { //ロック解除時間を過ぎている場合
+                e.setFail_login_count(0); //カウントを0にして
+                e.setLocked_at(null); //ロック時間をカラに
+                em.getTransaction().begin();
+                em.getTransaction().commit();
+            } else { //ロック中の場合
+                em.close();
+                e = null;
+                request.setAttribute("_token", request.getSession().getId());
+                request.setAttribute("hasError", "アカウントがロックされています。");
+                request.setAttribute("code", code);
+
+                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/login/login.jsp");
+                rd.forward(request, response);
+            }
+
+        }
+        em.close();
+        request.getSession().setAttribute("flush", "ログインしました。");
+        request.getSession().setAttribute("login_employee", e);
+        response.sendRedirect(request.getContextPath() + "/");
     }
 
 }

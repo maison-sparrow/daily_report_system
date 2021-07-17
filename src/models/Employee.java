@@ -32,6 +32,11 @@ import javax.persistence.Table;
     @NamedQuery(
             name = "checkLoginCodeAndPassword",
             query = "SELECT e FROM Employee AS e WHERE e.delete_flag = 0 AND e.code = :code AND e.password = :pass"
+    ),
+    //削除済みでなく、Javaのcodeとカラムcodeが同じレコードがあるか
+    @NamedQuery(
+            name = "checkLoginCode",
+            query = "SELECT e FROM Employee AS e WHERE e.delete_flag = 0 AND e.code = :code"
         )
 })
 @Entity
@@ -63,6 +68,12 @@ public class Employee {
 
     @Column(name = "delete_flag", nullable = false)
     private Integer delete_flag;
+
+    @Column(name = "fail_login_count")
+    private Integer fail_login_count;
+
+    @Column(name = "locked_at")
+    private Timestamp locked_at;
 
     public Integer getId() {
         return id;
@@ -127,4 +138,21 @@ public class Employee {
     public void setDelete_flag(Integer delete_flag) {
         this.delete_flag = delete_flag;
     }
+
+    public Integer getFail_login_count() {
+        return fail_login_count;
+    }
+
+    public void setFail_login_count(Integer fail_login_count) {
+        this.fail_login_count = fail_login_count;
+    }
+
+    public Timestamp getLocked_at() {
+        return locked_at;
+    }
+
+    public void setLocked_at(Timestamp locked_at) {
+        this.locked_at = locked_at;
+    }
+
 }

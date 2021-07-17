@@ -2,14 +2,19 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:import url="/WEB-INF/views/layout/app.jsp">
     <c:param name="content">
-        <c:if test="${hasError}">
+        <c:if test="${hasError != null}">
             <div id="flush_error">
-                社員番号かパスワードが間違っています。
+                <c:out value="${hasError}" />
+            </div>
+        </c:if>
+        <c:if test="${locked != null}">
+            <div id="locked">
+                <c:out value="${locked}" />
             </div>
         </c:if>
         <c:if test="${flush != null}">
             <div id="flush_success">
-                <c:out value="${flush}"></c:out>
+                <c:out value="${flush}" />
             </div>
         </c:if>
         <h2>ログイン</h2>

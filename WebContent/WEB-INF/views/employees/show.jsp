@@ -38,6 +38,16 @@
                                 <fmt:formatDate value="${employee.updated_at}" pattern="yyyy-MM-dd HH:mm:ss" />
                             </td>
                         </tr>
+                        <tr>
+                            <th>パスワードエラー回数</th>
+                            <td><c:out value="${employee.fail_login_count}" /></td>
+                        </tr>
+                        <tr>
+                            <th>ロック日時</th>
+                            <td>
+                                <fmt:formatDate value="${employee.locked_at}" pattern="yyyy-MM-dd HH:mm:ss" />
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
 
