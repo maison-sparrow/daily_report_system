@@ -55,7 +55,7 @@ public class EmployeesUpdateServlet extends HttpServlet {
             if(e.getCode().equals(request.getParameter("code"))){ //Ifでcodeが重複していたら
                 codeDuplicateCheckFlag = false; //falseと宣言、するとバリデーションされない
             } else{
-                e.setCode(request.getParameter("code")); //それ以外の場合は_formでのcodeを得てEmployeにセット
+                e.setCode(request.getParameter("code")); //それ以外の場合は_formでのcodeを得てEmployeeにセット
             }
 
             //パスワード欄に入力があったら
@@ -80,7 +80,13 @@ public class EmployeesUpdateServlet extends HttpServlet {
             e.setUpdated_at(new Timestamp(System.currentTimeMillis()));
             e.setDelete_flag(0);
 
-            List<String> errors = EmployeeValidator.validate(e, codeDuplicateCheckFlag, passwordCheckFlag);
+
+
+
+
+
+
+            List<String> errors = EmployeeValidator.validate(e, codeDuplicateCheckFlag, passwordCheckFlag, password);
             //バリデーションしてエラーがあればフォームに初期値を設定してeditへ戻る
             if (errors.size() > 0) {
                 em.close();

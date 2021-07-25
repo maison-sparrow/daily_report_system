@@ -2,6 +2,8 @@ package models.validators;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.persistence.EntityManager;
 
@@ -9,7 +11,10 @@ import models.Employee;
 import utils.DBUtil;
 
 public class EmployeeValidator {
-    public static List<String> validate(Employee e, Boolean codeDuplicateCheckFlag, Boolean passwordCheckFlag) {
+    public static List<String> validate(Employee e, Boolean codeDuplicateCheckFlag, Boolean passwordCheckFlag, String password) {
+
+
+
         List<String> errors = new ArrayList<String>();
 
         String code_error = validateCode(e.getCode(), codeDuplicateCheckFlag);
@@ -22,7 +27,7 @@ public class EmployeeValidator {
             errors.add(name_error);
         }
 
-        String password_error = validatePassword(e.getPassword(), passwordCheckFlag);
+        String password_error = validatePassword(passwordCheckFlag, password);
         if(!password_error.equals("")) {
             errors.add(password_error);
         }
@@ -30,7 +35,7 @@ public class EmployeeValidator {
         return errors;
     }
 
-    // 社員番号 codeDuplicateCheckFlagはeditに出てくる
+    // 社員番号
     private static String validateCode(String code, Boolean codeDuplicateCheckFlag) {
         // 必須入力チェック
         if(code == null || code.equals("")) {
@@ -60,12 +65,61 @@ public class EmployeeValidator {
         return "";
     }
 
-    // パスワードの必須入力チェック
-    private static String validatePassword(String password, Boolean passwordCheckFlag) {
-        // パスワードを変更する場合のみ実行
+    //パスワード
+    private static String validatePassword(Boolean passwordCheckFlag, String password) {
+        // 必須入力チェック
         if(passwordCheckFlag && (password == null || password.equals(""))) {
             return "パスワードを入力してください。";
         }
+
+        // 文字列チェック
+
+
+
+
+
+
+        Pattern p1 = Pattern.compile("(?=.*[A-Z])");
+        Matcher m1 = p1.matcher(password);
+        boolean passwordcheck1 = m1.find();
+
+        Pattern p2 = Pattern.compile("(?=.*[a-z])");
+        Matcher m2 = p2.matcher(password);
+        boolean passwordcheck2 = m2.find();
+
+        Pattern p3 = Pattern.compile("(?=.*[0-9])");
+        Matcher m3 = p3.matcher(password);
+        boolean passwordcheck3 = m3.find();
+
+        Pattern p4 = Pattern.compile("(?=.*[@_-])");
+        Matcher m4 = p4.matcher(password);
+        boolean passwordcheck4 = m4.find();
+
+        List<String> password_check_errors = new ArrayList<String>();
+
+        if(!passwordcheck1) {
+            password_check_errors.add("英大文字を使用");
+        }
+        if(!passwordcheck2) {
+            password_check_errors.add("英小文字を使用");
+        }
+        if(!passwordcheck3) {
+            password_check_errors.add("数字を使用");
+        }
+        if(!passwordcheck4) {
+            password_check_errors.add("記号（@-_）を使用");
+        }
+        if(password.length() < 8 || password.length() > 50) {
+            password_check_errors.add("文字数は8～50文字に");
+        }
+
+        if(passwordCheckFlag && password_check_errors != null) {
+            String password_check_errors_join = String.join("、", password_check_errors);
+            String send_password_check_errors = "パスワードが条件を満たしていません。" + password_check_errors_join + "してください。";
+
+              return send_password_check_errors;
+            }
         return "";
     }
+
 }
