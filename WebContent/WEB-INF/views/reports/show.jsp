@@ -7,6 +7,31 @@
                 <c:when test="${report != null}">
                     <h2>日報　詳細ページ</h2>
 
+                    <h4>&nbsp;<c:out value="${like_count}" />
+
+                    <c:choose>
+                        <c:when test="${like_or_not = true}">
+                            <form method="post" action="<c:url value='/reports/like' />">
+                            <input type="hidden" name="status" value="like" />
+                            <input type="hidden" name="report_id" value="${report.id}" />
+                            <button type="submit">いいね</button>
+                            </form>
+                        </c:when>
+                        <c:otherwise>
+                            <form method="post" action="<c:url value='/reports/like' />">
+                            <input type="hidden" name="status" value="like" />
+                            <input type="hidden" name="report_id" value="${report.id}" />
+                            <button type="submit">いいね</button>
+                            </form>
+                        </c:otherwise>
+                    </c:choose>
+
+                    <form method="post" action="<c:url value='/reports/like' />">
+                    <input type="hidden" name="status" value="cancel" />
+                    <input type="hidden" name="report_id" value="${report.id}" />
+                    <button type="submit">いいね取消</button>
+                    </form></h4>
+
                     <table>
                         <tbody>
                             <tr>
