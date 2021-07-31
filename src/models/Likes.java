@@ -12,19 +12,25 @@ import javax.persistence.Table;
 @Table(name = "Likes_table")
 @NamedQueries({
     //ログインしている従業員がいいねを押した日報をSELECT
-    //SELECT * FROM Like WHERE Employee_id = 該当の従業員ID;
+    //SELECT * FROM Likes_table WHERE Employee_id = 該当の従業員ID;
     @NamedQuery(
             name = "getMyFaveReports",
             query = "SELECT l FROM Likes AS l WHERE l.employee_id = :employee_id"
     ),
+    //ログインしている従業員がいいねを押した日報を集計
+    //SELECT COUNT(*) FROM Likes_table WHERE employee_id = 該当の従業員ID;
+    @NamedQuery(
+            name = "getFaveReportsCount",
+            query = "SELECT COUNT(l) FROM Likes AS l WHERE l.employee_id = :employee_id"
+    ),
     //該当の日報に付いたいいねを集計
-    //SELECT COUNT(*) FROM like WHERE report_id = 該当の日報ID;
+    //SELECT COUNT(*) FROM Likes_table WHERE report_id = 該当の日報ID;
     @NamedQuery(
             name = "getLikesCount",
             query = "SELECT COUNT(l) FROM Likes AS l WHERE l.report_id = :report_id"
     ),
    //日報id、従業員idをしていしてLikesを取得
-    //SELECT * FROM like WHERE report_id = 該当の日報ID AND employee_id = 該当の従業員ID;
+    //SELECT * FROM Likes_table WHERE report_id = 該当の日報ID AND employee_id = 該当の従業員ID;
     @NamedQuery(
             name = "getOneLikes",
             query = "SELECT l FROM Likes AS l WHERE l.report_id = :report_id AND l.employee_id = :employee_id"

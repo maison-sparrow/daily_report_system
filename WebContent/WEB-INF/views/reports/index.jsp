@@ -10,6 +10,7 @@
         </c:if>
         <h2>日報　一覧</h2>
         <table id="report_list">
+        <h4><a href="<c:url value='/reports/likes' />">いいねした日報の一覧を見る</a></h4>
             <tbody>
                 <tr>
                     <th class="report_name">氏名</th>

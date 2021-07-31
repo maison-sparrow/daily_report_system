@@ -34,6 +34,11 @@ import javax.persistence.Table;
     @NamedQuery(
             name = "getMyReportsCount",
             query = "SELECT COUNT(r) FROM Report AS r WHERE r.employee = :employee"
+    ),
+    //日報idから1件のレコードを取得する
+    @NamedQuery(
+            name = "getOneReport",
+            query = "SELECT r FROM Report AS r WHERE r.id = :id"
     )
 
 })
