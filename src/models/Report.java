@@ -2,7 +2,6 @@ package models;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,9 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -66,18 +63,6 @@ public class Report {
 
     @Column(name = "updated_at", nullable = false)
     private Timestamp updated_at;
-
-    @ManyToMany
-    @JoinTable(
-            name = "join_table", //中間テーブルの名前を決める
-            joinColumns = { //Joinするカラムの主キーを書く
-              @JoinColumn(name = "Report_id", referencedColumnName = "id", unique=true) //このクラスの分
-            },
-            inverseJoinColumns = {
-              @JoinColumn(name = "Employee_id", referencedColumnName = "id") // 相手クラスの分
-            }
-          )
-          private List<Employee> employees_who_liked_report; //このクラスで使う、相手クラスが入ったリスト
 
     public Integer getId() {
         return id;
@@ -135,11 +120,4 @@ public class Report {
         this.updated_at = updated_at;
     }
 
-    public List<Employee> getEmployees_who_liked_report() {
-        return employees_who_liked_report;
-    }
-
-    public void setEmployees_who_liked_report(List<Employee> employees_who_liked_report) {
-        this.employees_who_liked_report = employees_who_liked_report;
-    }
 }

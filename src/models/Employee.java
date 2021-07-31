@@ -1,16 +1,12 @@
 package models;
 
 import java.sql.Timestamp;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -78,18 +74,6 @@ public class Employee {
 
     @Column(name = "locked_at")
     private Timestamp locked_at;
-
-    @ManyToMany
-    @JoinTable(
-            name = "join_table",
-            joinColumns = {
-              @JoinColumn(name = "Employee_id", referencedColumnName = "id")
-            },
-            inverseJoinColumns = {
-              @JoinColumn(name = "Report_id", referencedColumnName = "id", unique=true)
-            }
-          )
-          private List<Report> Reports_witch_one_likes;
 
     public Integer getId() {
         return id;
@@ -169,13 +153,5 @@ public class Employee {
 
     public void setLocked_at(Timestamp locked_at) {
         this.locked_at = locked_at;
-    }
-
-    public List<Report> getReports_witch_one_likes() {
-        return Reports_witch_one_likes;
-    }
-
-    public void setReports_witch_one_likes(List<Report> reports_witch_one_likes) {
-        Reports_witch_one_likes = reports_witch_one_likes;
     }
 }

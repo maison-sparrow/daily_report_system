@@ -1,8 +1,6 @@
 package controllers.reports;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.servlet.ServletException;
@@ -12,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import models.Employee;
+import models.Likes;
 import models.Report;
 import utils.DBUtil;
 
@@ -38,31 +37,33 @@ public class ReportsLikeServlet extends HttpServlet {
         Report r = em.find(Report.class, Integer.parseInt(request.getParameter("report_id")));
         Employee e = (Employee) request.getSession().getAttribute("login_employee");
 
-        List<Employee> employees_who_liked_report = new ArrayList<Employee>();
-        employees_who_liked_report = r.getEmployees_who_liked_report();
+        //List<Employee> employees_who_liked_report = new ArrayList<Employee>();
+        //employees_who_liked_report = r.getEmployees_who_liked_report();
 
         String status = request.getParameter("status");
 
-        if (status.equals("like")) {
-            employees_who_liked_report.add(e);
+        Likes l = new Likes();
+
+        if (status.equals("push_like")) {
+            l.setEmployee_id(e.getId());
+            l.setReport_id(r.getId());
+
+            em.getTransaction().begin();
+            em.persist(l);
         }
 
-        if (status.equals("cancel")) {
-            //    employees_who_liked_report.remove(employees_who_liked_report.indexOf(e));
-            for (int i = 0; i < employees_who_liked_report.size(); i++) {
-                Employee e_of_list = employees_who_liked_report.get(i);
-                if (e_of_list.getId().equals(e.getId())) {
-                    employees_who_liked_report.remove(i);
-                    break;
-                }
+        if (status.equals("push_cancel")) {
 
-            }
-
-
+            l = em.createNamedQuery("getOneLikes", Likes.class)//,ラッパークラス.classでクエリの戻り値を指定しているので合わせる
+                    .setParameter("report_id", r.getId())
+                    .setParameter("employee_id", e.getId())
+                    .getSingleResult();
+            em.getTransaction().begin();
+            em.remove(l);
         }
-        r.setEmployees_who_liked_report(employees_who_liked_report);
 
-        em.getTransaction().begin();
+
+
         em.getTransaction().commit();
         em.close();
 

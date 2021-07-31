@@ -1,10 +1,9 @@
 package controllers.reports;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import models.Employee;
+import models.Likes;
 import models.Report;
 import utils.DBUtil;
 
@@ -38,30 +38,38 @@ public class ReportsShowServlet extends HttpServlet {
 
         Report r = em.find(Report.class, Integer.parseInt(request.getParameter("id")));
 
-        //追加
         Employee e = (Employee) request.getSession().getAttribute("login_employee");
 
+        //★★★intに直す？
+        long likes_count = (long)em.createNamedQuery("getLikesCount", Long.class)//,ラッパークラス.classでクエリの戻り値を指定しているので合わせる
+                    .setParameter("report_id", r.getId()) //namedqueryに引数が必要な場合はここに入れる
+                    .getSingleResult(); //全部で何件か
 
-        //List<Employee> employees_who_liked_report = r.getEmployees_who_liked_report();
-        List<Employee> employees_who_liked_report = new ArrayList<Employee>();
-        employees_who_liked_report = r.getEmployees_who_liked_report();
+        //ログインしている従業員がこの日報にいいねを押したかどうか、falseだといいねを押せる
+        boolean liked_more_than_one = false;
+        Likes l = new Likes();
 
-        int like_count = employees_who_liked_report.size();
+        try {
+            l = em.createNamedQuery("getOneLikes", Likes.class)
+                    .setParameter("report_id", r.getId())
+                    .setParameter("employee_id", e.getId())
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+
+        }
+
+        if (l.getId() != null) {
+            liked_more_than_one = true;
+        }
 
 
-        boolean like_or_not = employees_who_liked_report.contains(e);
-
-
-
-        //employees_who_liked_reportは別のEntityのListなので
+        //★employees_who_liked_reportは別のEntityのListなので
         //closeするのはrをnewしてすぐでなく、Listを宣言してから。
         em.close();
 
-        request.setAttribute("like_count", like_count);
+        request.setAttribute("likes_count", likes_count);
         request.setAttribute("report", r);
-        //追加
-        request.setAttribute("like_or_not", like_or_not);
-
+        request.setAttribute("liked_more_than_one", liked_more_than_one);
         request.setAttribute("_token", request.getSession().getId());
 
         RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/reports/show.jsp");

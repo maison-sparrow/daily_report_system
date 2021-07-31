@@ -7,30 +7,27 @@
                 <c:when test="${report != null}">
                     <h2>日報　詳細ページ</h2>
 
-                    <h4>&nbsp;<c:out value="${like_count}" />
+                    <h4>&nbsp;<c:out value="${likes_count}" />
 
                     <c:choose>
-                        <c:when test="${like_or_not = true}">
+                        <c:when test="${!liked_more_than_one}">
                             <form method="post" action="<c:url value='/reports/like' />">
-                            <input type="hidden" name="status" value="like" />
+                            <input type="hidden" name="status" value="push_like" />
                             <input type="hidden" name="report_id" value="${report.id}" />
                             <button type="submit">いいね</button>
                             </form>
                         </c:when>
-                        <c:otherwise>
+                        <c:when test="${liked_more_than_one}">
                             <form method="post" action="<c:url value='/reports/like' />">
-                            <input type="hidden" name="status" value="like" />
+                            <input type="hidden" name="status" value="push_cancel" />
                             <input type="hidden" name="report_id" value="${report.id}" />
-                            <button type="submit">いいね</button>
+                            <button type="submit">いいね取消</button>
                             </form>
-                        </c:otherwise>
+                        </c:when>
+                        <c:otherwise><p>liked_more_than_oneの結果なし</p></c:otherwise>
                     </c:choose>
 
-                    <form method="post" action="<c:url value='/reports/like' />">
-                    <input type="hidden" name="status" value="cancel" />
-                    <input type="hidden" name="report_id" value="${report.id}" />
-                    <button type="submit">いいね取消</button>
-                    </form></h4>
+                    </h4>
 
                     <table>
                         <tbody>
