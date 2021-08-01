@@ -7,21 +7,38 @@
                 <c:when test="${report != null}">
                     <h2>日報　詳細ページ</h2>
 
-                    <h4>&nbsp;<c:out value="${likes_count}" />
+
 
                     <c:choose>
                         <c:when test="${!liked_more_than_one}">
+
+                            <table class="likes">
+                                <tbody>
+                                    <tr>
+                            <th><img src="<c:url value='/like_white.png' />" alt="いいね" width="19" height="23"></th>
+                            <td><c:out value="${likes_count}" /></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                             <form method="post" action="<c:url value='/reports/like' />">
                             <input type="hidden" name="status" value="push_like" />
                             <input type="hidden" name="report_id" value="${report.id}" />
-                            <button type="submit">いいね</button>
+                            <button class="like_button" type="submit">いいね</button>
                             </form>
                         </c:when>
                         <c:when test="${liked_more_than_one}">
+                            <table class="likes">
+                                <tbody>
+                                    <tr>
+                            <th><img src="<c:url value='/like_gray.png' />" alt="いいね" width="19" height="23"></th>
+                            <td><c:out value="${likes_count}" /></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                             <form method="post" action="<c:url value='/reports/like' />">
                             <input type="hidden" name="status" value="push_cancel" />
                             <input type="hidden" name="report_id" value="${report.id}" />
-                            <button type="submit">いいね取消</button>
+                            <button class="like_button" type="submit">いいね取消</button>
                             </form>
                         </c:when>
                         <c:otherwise><p>liked_more_than_oneの結果なし</p></c:otherwise>

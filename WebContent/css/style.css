@@ -61,6 +61,20 @@ table {
     table-layout: fixed;
 }
 
+table.likes {
+    width: 7%;
+    table-layout: fixed;
+    border: #ffffff solid;
+}
+
+table.likes td {
+    border: #ffffff solid;
+}
+
+table.likes th {
+    border: #ffffff solid;
+}
+
 th {
     width: 26%;
     padding: 10px 2%;
@@ -74,6 +88,11 @@ td {
 button {
     font-size: 14px;
     padding: 5px 10px;
+}
+
+.like_button {
+    margin-top: 5px;
+    margin-bottom: 15px;
 }
 
 #footer {
